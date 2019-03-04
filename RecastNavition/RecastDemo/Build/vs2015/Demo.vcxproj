@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\recastnavigation-master\RecastDemo\Contrib\fastlz;C:\recastnavigation-master\Recast\Include;C:\recastnavigation-master\DetourTileCache\Include;C:\recastnavigation-master\DetourCrowd\Include;C:\recastnavigation-master\Detour\Include;C:\recastnavigation-master\Demo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\zhangjun1\Desktop\recastnavigation-master\RecastNavigation\RecastNavition\Demo\Include;..\..\..\RecastDemo\Contrib\fastlz;..\..\..\Recast\Include;..\..\..\DetourTileCache\Include;..\..\..\DetourCrowd\Include;..\..\..\Detour\Include;..\..\Include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -85,6 +85,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\..\Detour\Include;..\..\Contrib\fastlz;..\..\..\DetourCrowd\Include;..\..\..\DetourTileCache\Include;..\..\Include;..\..\..\Recast\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,28 +118,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="Detour.vcxproj">
-      <Project>{18fee2ad-04a0-0d84-ed5a-21d8d99b94d4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="DetourCrowd.vcxproj">
-      <Project>{f7616a66-6317-e35b-ec0b-dd3258c0d95f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="DetourTileCache.vcxproj">
-      <Project>{1ab411d3-863f-7f97-8f50-028cfb5adb97}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Recast.vcxproj">
-      <Project>{a7a881ce-934a-aca4-7c05-c0f8684633f5}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\Demo\Include\MyTempObstacles.h" />
+    <ClInclude Include="..\..\..\Demo\Include\PerfTimer.h" />
     <ClInclude Include="..\..\..\Demo\Include\Sample.h" />
+    <ClInclude Include="..\..\..\Demo\Include\SampleInterfaces.h" />
     <ClInclude Include="..\..\Contrib\fastlz\fastlz.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Demo\Source\main.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\MyTempObstacles.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\Sample.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\PerfTimer.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\SampleInterfaces.cpp" />
     <ClCompile Include="..\..\Contrib\fastlz\fastlz.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

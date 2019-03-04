@@ -1,1 +1,15 @@
-﻿  RecastDemo.vcxproj -> C:\recastnavigation-master\RecastDemo\Build\vs2015\..\..\Bin\RecastDemo.exe
+﻿  ConvexVolumeTool.cpp
+  CrowdTool.cpp
+  InputGeom.cpp
+  NavMeshPruneTool.cpp
+  NavMeshTesterTool.cpp
+  OffMeshConnectionTool.cpp
+  Sample.cpp
+  SampleInterfaces.cpp
+  Sample_Debug.cpp
+  Sample_SoloMesh.cpp
+  Sample_TempObstacles.cpp
+  Sample_TileMesh.cpp
+  main.cpp
+  正在生成代码...
+  RecastDemo.vcxproj -> C:\Users\zhangjun1\Desktop\recastnavigation-master\RecastNavigation\RecastNavition\RecastDemo\Build\vs2015\..\..\Bin\RecastDemo.exe

@@ -31,33 +31,11 @@
 #	define snprintf _snprintf
 #endif
 
-unsigned int SampleDebugDraw::areaToCol(unsigned int area)
-{
-	switch(area)
-	{
-	// Ground (0) : light blue
-	case SAMPLE_POLYAREA_GROUND: return duRGBA(0, 192, 255, 255);
-	// Water : blue
-	case SAMPLE_POLYAREA_WATER: return duRGBA(0, 0, 255, 255);
-	// Road : brown
-	case SAMPLE_POLYAREA_ROAD: return duRGBA(50, 20, 12, 255);
-	// Door : cyan
-	case SAMPLE_POLYAREA_DOOR: return duRGBA(0, 255, 255, 255);
-	// Grass : green
-	case SAMPLE_POLYAREA_GRASS: return duRGBA(0, 255, 0, 255);
-	// Jump : yellow
-	case SAMPLE_POLYAREA_JUMP: return duRGBA(255, 255, 0, 255);
-	// Unexpected : red
-	default: return duRGBA(255, 0, 0, 255);
-	}
-}
-
 Sample::Sample() :
 	m_geom(0),
 	m_navMesh(0),
 	m_navQuery(0),
 	m_crowd(0),
-	m_navMeshDrawFlags(DU_DRAWNAVMESH_OFFMESHCONS|DU_DRAWNAVMESH_CLOSEDLIST),
 	m_filterLowHangingObstacles(true),
 	m_filterLedgeSpans(true),
 	m_filterWalkableLowHeightSpans(true),
@@ -90,36 +68,6 @@ void Sample::setTool(SampleTool* tool)
 		m_tool->init(this);
 }
 
-void Sample::handleSettings()
-{
-}
-
-void Sample::handleTools()
-{
-}
-
-void Sample::handleDebugMode()
-{
-}
-
-void Sample::handleRender()
-{
-	if (!m_geom)
-		return;
-	
-	// Draw mesh
-	duDebugDrawTriMesh(&m_dd, m_geom->getMesh()->getVerts(), m_geom->getMesh()->getVertCount(),
-					   m_geom->getMesh()->getTris(), m_geom->getMesh()->getNormals(), m_geom->getMesh()->getTriCount(), 0, 1.0f);
-	// Draw bounds
-	const float* bmin = m_geom->getMeshBoundsMin();
-	const float* bmax = m_geom->getMeshBoundsMax();
-	duDebugDrawBoxWire(&m_dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0f);
-}
-
-void Sample::handleRenderOverlay(double* /*proj*/, double* /*model*/, int* /*view*/)
-{
-}
-
 void Sample::handleMeshChanged(InputGeom* geom)
 {
 	m_geom = geom;
@@ -138,8 +86,6 @@ void Sample::handleMeshChanged(InputGeom* geom)
 		m_edgeMaxLen = buildSettings->edgeMaxLen;
 		m_edgeMaxError = buildSettings->edgeMaxError;
 		m_vertsPerPoly = buildSettings->vertsPerPoly;
-		m_detailSampleDist = buildSettings->detailSampleDist;
-		m_detailSampleMaxError = buildSettings->detailSampleMaxError;
 		m_partitionType = buildSettings->partitionType;
 	}
 }
@@ -157,8 +103,6 @@ void Sample::collectSettings(BuildSettings& settings)
 	settings.edgeMaxLen = m_edgeMaxLen;
 	settings.edgeMaxError = m_edgeMaxError;
 	settings.vertsPerPoly = m_vertsPerPoly;
-	settings.detailSampleDist = m_detailSampleDist;
-	settings.detailSampleMaxError = m_detailSampleMaxError;
 	settings.partitionType = m_partitionType;
 }
 
@@ -179,85 +123,6 @@ void Sample::resetCommonSettings()
 	m_detailSampleDist = 6.0f;
 	m_detailSampleMaxError = 1.0f;
 	m_partitionType = SAMPLE_PARTITION_WATERSHED;
-}
-
-void Sample::handleCommonSettings()
-{
-	imguiLabel("Rasterization");
-	imguiSlider("Cell Size", &m_cellSize, 0.1f, 1.0f, 0.01f);
-	imguiSlider("Cell Height", &m_cellHeight, 0.1f, 1.0f, 0.01f);
-	
-	if (m_geom)
-	{
-		const float* bmin = m_geom->getNavMeshBoundsMin();
-		const float* bmax = m_geom->getNavMeshBoundsMax();
-		int gw = 0, gh = 0;
-		rcCalcGridSize(bmin, bmax, m_cellSize, &gw, &gh);
-		char text[64];
-		snprintf(text, 64, "Voxels  %d x %d", gw, gh);
-		imguiValue(text);
-	}
-	
-	imguiSeparator();
-	imguiLabel("Agent");
-	imguiSlider("Height", &m_agentHeight, 0.1f, 5.0f, 0.1f);
-	imguiSlider("Radius", &m_agentRadius, 0.0f, 5.0f, 0.1f);
-	imguiSlider("Max Climb", &m_agentMaxClimb, 0.1f, 5.0f, 0.1f);
-	imguiSlider("Max Slope", &m_agentMaxSlope, 0.0f, 90.0f, 1.0f);
-	
-	imguiSeparator();
-	imguiLabel("Region");
-	imguiSlider("Min Region Size", &m_regionMinSize, 0.0f, 150.0f, 1.0f);
-	imguiSlider("Merged Region Size", &m_regionMergeSize, 0.0f, 150.0f, 1.0f);
-
-	imguiSeparator();
-	imguiLabel("Partitioning");
-	if (imguiCheck("Watershed", m_partitionType == SAMPLE_PARTITION_WATERSHED))
-		m_partitionType = SAMPLE_PARTITION_WATERSHED;
-	if (imguiCheck("Monotone", m_partitionType == SAMPLE_PARTITION_MONOTONE))
-		m_partitionType = SAMPLE_PARTITION_MONOTONE;
-	if (imguiCheck("Layers", m_partitionType == SAMPLE_PARTITION_LAYERS))
-		m_partitionType = SAMPLE_PARTITION_LAYERS;
-	
-	imguiSeparator();
-	imguiLabel("Filtering");
-	if (imguiCheck("Low Hanging Obstacles", m_filterLowHangingObstacles))
-		m_filterLowHangingObstacles = !m_filterLowHangingObstacles;
-	if (imguiCheck("Ledge Spans", m_filterLedgeSpans))
-		m_filterLedgeSpans= !m_filterLedgeSpans;
-	if (imguiCheck("Walkable Low Height Spans", m_filterWalkableLowHeightSpans))
-		m_filterWalkableLowHeightSpans = !m_filterWalkableLowHeightSpans;
-
-	imguiSeparator();
-	imguiLabel("Polygonization");
-	imguiSlider("Max Edge Length", &m_edgeMaxLen, 0.0f, 50.0f, 1.0f);
-	imguiSlider("Max Edge Error", &m_edgeMaxError, 0.1f, 3.0f, 0.1f);
-	imguiSlider("Verts Per Poly", &m_vertsPerPoly, 3.0f, 12.0f, 1.0f);		
-
-	imguiSeparator();
-	imguiLabel("Detail Mesh");
-	imguiSlider("Sample Distance", &m_detailSampleDist, 0.0f, 16.0f, 1.0f);
-	imguiSlider("Max Sample Error", &m_detailSampleMaxError, 0.0f, 16.0f, 1.0f);
-	
-	imguiSeparator();
-}
-
-void Sample::handleClick(const float* s, const float* p, bool shift)
-{
-	if (m_tool)
-		m_tool->handleClick(s, p, shift);
-}
-
-void Sample::handleToggle()
-{
-	if (m_tool)
-		m_tool->handleToggle();
-}
-
-void Sample::handleStep()
-{
-	if (m_tool)
-		m_tool->handleStep();
 }
 
 bool Sample::handleBuild()
@@ -282,12 +147,12 @@ void Sample::updateToolStates(const float dt)
 	}
 }
 
-void Sample::initToolStates(Sample* sample)
+void Sample::initToolStates(Sample* Sample)
 {
 	for (int i = 0; i < MAX_TOOLS; i++)
 	{
 		if (m_toolStates[i])
-			m_toolStates[i]->init(sample);
+			m_toolStates[i]->init(Sample);
 	}
 }
 

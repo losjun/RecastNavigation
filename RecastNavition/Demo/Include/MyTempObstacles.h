@@ -25,7 +25,7 @@
 #include "ChunkyTriMesh.h"
 
 
-class Sample_TempObstacles : public Sample
+class MyTempObstacles : public Sample
 {
 protected:
 	bool m_keepInterResults;
@@ -42,43 +42,18 @@ protected:
 	int m_cacheLayerCount;
 	unsigned int m_cacheBuildMemUsage;
 
-	enum DrawMode
-	{
-		DRAWMODE_NAVMESH,
-		DRAWMODE_NAVMESH_TRANS,
-		DRAWMODE_NAVMESH_BVTREE,
-		DRAWMODE_NAVMESH_NODES,
-		DRAWMODE_NAVMESH_PORTALS,
-		DRAWMODE_NAVMESH_INVIS,
-		DRAWMODE_MESH,
-		DRAWMODE_CACHE_BOUNDS,
-		MAX_DRAWMODE
-	};
-
-	DrawMode m_drawMode;
-
 	int m_maxTiles;
 	int m_maxPolysPerTile;
 	float m_tileSize;
 
 public:
-	Sample_TempObstacles();
-	virtual ~Sample_TempObstacles();
-
-	virtual void handleSettings();
-	virtual void handleTools();
-	virtual void handleDebugMode();
-	virtual void handleRender();
-	virtual void handleRenderOverlay(double* proj, double* model, int* view);
+	MyTempObstacles();
+	virtual ~MyTempObstacles();
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
 	virtual void handleUpdate(const float dt);
 
 	void getTilePos(const float* pos, int& tx, int& ty);
-
-	void renderCachedTile(const int tx, const int ty, const int type);
-	void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
-
 	void addTempObstacle(const float* pos);
 	void removeTempObstacle(const float* sp, const float* sq);
 	void clearAllTempObstacles();
@@ -88,8 +63,8 @@ public:
 
 private:
 	// Explicitly disabled copy constructor and copy assignment operator.
-	Sample_TempObstacles(const Sample_TempObstacles&);
-	Sample_TempObstacles& operator=(const Sample_TempObstacles&);
+	MyTempObstacles(const MyTempObstacles&);
+	MyTempObstacles& operator=(const MyTempObstacles&);
 
 	int rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, struct TileCacheData* tiles, const int maxTiles);
 };

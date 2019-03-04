@@ -1,1 +1,9 @@
-﻿  Detour.vcxproj -> C:\recastnavigation-master\RecastDemo\Build\vs2015\lib\Debug\Detour.lib
+﻿  DetourAlloc.cpp
+  DetourAssert.cpp
+  DetourCommon.cpp
+  DetourNavMesh.cpp
+  DetourNavMeshBuilder.cpp
+  DetourNavMeshQuery.cpp
+  DetourNode.cpp
+  正在生成代码...
+  Detour.vcxproj -> C:\Users\zhangjun1\Desktop\recastnavigation-master\RecastNavigation\RecastNavition\RecastDemo\Build\vs2015\lib\Debug\Detour.lib

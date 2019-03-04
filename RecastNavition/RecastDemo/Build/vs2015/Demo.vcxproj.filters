@@ -13,30 +13,51 @@
     <Filter Include="Contrib\fastlz">
       <UniqueIdentifier>{cd90fe56-2b35-4595-8259-1116e82b0cb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Contrib\Sample">
+      <UniqueIdentifier>{e2233b74-da75-431a-8163-371ffbcd3c8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contrib\PerfTimer">
+      <UniqueIdentifier>{aeaf3cf8-a2fa-4af7-8b39-d7ae272e3d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contrib\SampleInterfaces">
+      <UniqueIdentifier>{d3d2b753-9f89-450a-9701-980457e0eb72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Contrib\fastlz\fastlz.h">
+      <Filter>Contrib\fastlz</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Demo\Include\MyTempObstacles.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Demo\Include\Sample.h">
-      <Filter>Include</Filter>
+      <Filter>Contrib\Sample</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Contrib\fastlz\fastlz.h">
-      <Filter>Contrib\fastlz</Filter>
+    <ClInclude Include="..\..\..\Demo\Include\PerfTimer.h">
+      <Filter>Contrib\PerfTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\SampleInterfaces.h">
+      <Filter>Contrib\SampleInterfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Demo\Source\main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Contrib\fastlz\fastlz.c">
+      <Filter>Contrib\fastlz</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Demo\Source\MyTempObstacles.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Demo\Source\Sample.cpp">
-      <Filter>Source</Filter>
+      <Filter>Contrib\Sample</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Contrib\fastlz\fastlz.c">
-      <Filter>Contrib\fastlz</Filter>
+    <ClCompile Include="..\..\..\Demo\Source\PerfTimer.cpp">
+      <Filter>Contrib\PerfTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\SampleInterfaces.cpp">
+      <Filter>Contrib\SampleInterfaces</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -59,11 +59,6 @@ enum SamplePolyFlags
 	SAMPLE_POLYFLAGS_ALL		= 0xffff	// All abilities.
 };
 
-class SampleDebugDraw : public DebugDrawGL
-{
-public:
-	virtual unsigned int areaToCol(unsigned int area);
-};
 
 enum SamplePartitionType
 {
@@ -129,8 +124,6 @@ protected:
 	SampleToolState* m_toolStates[MAX_TOOLS];
 	
 	BuildContext* m_ctx;
-
-	SampleDebugDraw m_dd;
 	
 	dtNavMesh* loadAll(const char* path);
 	void saveAll(const char* path, const dtNavMesh* mesh);
@@ -144,8 +137,6 @@ public:
 	void setTool(SampleTool* tool);
 	SampleToolState* getToolState(int type) { return m_toolStates[type]; }
 	void setToolState(int type, SampleToolState* s) { m_toolStates[type] = s; }
-
-	SampleDebugDraw& getDebugDraw() { return m_dd; }
 
 	virtual void handleSettings();
 	virtual void handleTools();

@@ -260,7 +260,7 @@ struct RasterizationContext
 	int ntiles;
 };
 
-int Sample_TempObstacles::rasterizeTileLayers(
+int MyTempObstacles::rasterizeTileLayers(
 	const int tx, const int ty,
 	const rcConfig& cfg,
 	TileCacheData* tiles,
@@ -445,167 +445,6 @@ int Sample_TempObstacles::rasterizeTileLayers(
 }
 
 
-void drawTiles(duDebugDraw* dd, dtTileCache* tc)
-{
-	unsigned int fcol[6];
-	float bmin[3], bmax[3];
-
-	for (int i = 0; i < tc->getTileCount(); ++i)
-	{
-		const dtCompressedTile* tile = tc->getTile(i);
-		if (!tile->header) continue;
-
-		tc->calcTightTileBounds(tile->header, bmin, bmax);
-
-		const unsigned int col = duIntToCol(i, 64);
-		duCalcBoxColors(fcol, col, col);
-		duDebugDrawBox(dd, bmin[0], bmin[1], bmin[2], bmax[0], bmax[1], bmax[2], fcol);
-	}
-
-	for (int i = 0; i < tc->getTileCount(); ++i)
-	{
-		const dtCompressedTile* tile = tc->getTile(i);
-		if (!tile->header) continue;
-
-		tc->calcTightTileBounds(tile->header, bmin, bmax);
-
-		const unsigned int col = duIntToCol(i, 255);
-		const float pad = tc->getParams()->cs * 0.1f;
-		duDebugDrawBoxWire(dd, bmin[0] - pad, bmin[1] - pad, bmin[2] - pad,
-			bmax[0] + pad, bmax[1] + pad, bmax[2] + pad, col, 2.0f);
-	}
-
-}
-
-enum DrawDetailType
-{
-	DRAWDETAIL_AREAS,
-	DRAWDETAIL_REGIONS,
-	DRAWDETAIL_CONTOURS,
-	DRAWDETAIL_MESH,
-};
-
-void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, int type)
-{
-	struct TileCacheBuildContext
-	{
-		inline TileCacheBuildContext(struct dtTileCacheAlloc* a) : layer(0), lcset(0), lmesh(0), alloc(a) {}
-		inline ~TileCacheBuildContext() { purge(); }
-		void purge()
-		{
-			dtFreeTileCacheLayer(alloc, layer);
-			layer = 0;
-			dtFreeTileCacheContourSet(alloc, lcset);
-			lcset = 0;
-			dtFreeTileCachePolyMesh(alloc, lmesh);
-			lmesh = 0;
-		}
-		struct dtTileCacheLayer* layer;
-		struct dtTileCacheContourSet* lcset;
-		struct dtTileCachePolyMesh* lmesh;
-		struct dtTileCacheAlloc* alloc;
-	};
-
-	dtCompressedTileRef tiles[MAX_LAYERS];
-	const int ntiles = tc->getTilesAt(tx, ty, tiles, MAX_LAYERS);
-
-	dtTileCacheAlloc* talloc = tc->getAlloc();
-	dtTileCacheCompressor* tcomp = tc->getCompressor();
-	const dtTileCacheParams* params = tc->getParams();
-
-	for (int i = 0; i < ntiles; ++i)
-	{
-		const dtCompressedTile* tile = tc->getTileByRef(tiles[i]);
-
-		talloc->reset();
-
-		TileCacheBuildContext bc(talloc);
-		const int walkableClimbVx = (int)(params->walkableClimb / params->ch);
-		dtStatus status;
-
-		// Decompress tile layer data. 
-		status = dtDecompressTileCacheLayer(talloc, tcomp, tile->data, tile->dataSize, &bc.layer);
-		if (dtStatusFailed(status))
-			return;
-		if (type == DRAWDETAIL_AREAS)
-		{
-			duDebugDrawTileCacheLayerAreas(dd, *bc.layer, params->cs, params->ch);
-			continue;
-		}
-
-		// Build navmesh
-		status = dtBuildTileCacheRegions(talloc, *bc.layer, walkableClimbVx);
-		if (dtStatusFailed(status))
-			return;
-		if (type == DRAWDETAIL_REGIONS)
-		{
-			duDebugDrawTileCacheLayerRegions(dd, *bc.layer, params->cs, params->ch);
-			continue;
-		}
-
-		bc.lcset = dtAllocTileCacheContourSet(talloc);
-		if (!bc.lcset)
-			return;
-		status = dtBuildTileCacheContours(talloc, *bc.layer, walkableClimbVx,
-			params->maxSimplificationError, *bc.lcset);
-		if (dtStatusFailed(status))
-			return;
-		if (type == DRAWDETAIL_CONTOURS)
-		{
-			duDebugDrawTileCacheContours(dd, *bc.lcset, tile->header->bmin, params->cs, params->ch);
-			continue;
-		}
-
-		bc.lmesh = dtAllocTileCachePolyMesh(talloc);
-		if (!bc.lmesh)
-			return;
-		status = dtBuildTileCachePolyMesh(talloc, *bc.lcset, *bc.lmesh);
-		if (dtStatusFailed(status))
-			return;
-
-		if (type == DRAWDETAIL_MESH)
-		{
-			duDebugDrawTileCachePolyMesh(dd, *bc.lmesh, tile->header->bmin, params->cs, params->ch);
-			continue;
-		}
-
-	}
-}
-
-
-void drawDetailOverlay(const dtTileCache* tc, const int tx, const int ty, double* proj, double* model, int* view)
-{
-	dtCompressedTileRef tiles[MAX_LAYERS];
-	const int ntiles = tc->getTilesAt(tx, ty, tiles, MAX_LAYERS);
-	if (!ntiles)
-		return;
-
-	const int rawSize = calcLayerBufferSize(tc->getParams()->width, tc->getParams()->height);
-
-	char text[128];
-
-	for (int i = 0; i < ntiles; ++i)
-	{
-		const dtCompressedTile* tile = tc->getTileByRef(tiles[i]);
-
-		float pos[3];
-		pos[0] = (tile->header->bmin[0] + tile->header->bmax[0]) / 2.0f;
-		pos[1] = tile->header->bmin[1];
-		pos[2] = (tile->header->bmin[2] + tile->header->bmax[2]) / 2.0f;
-
-		GLdouble x, y, z;
-		if (gluProject((GLdouble)pos[0], (GLdouble)pos[1], (GLdouble)pos[2],
-			model, proj, view, &x, &y, &z))
-		{
-			snprintf(text, 128, "(%d,%d)/%d", tile->header->tx, tile->header->ty, tile->header->tlayer);
-			imguiDrawText((int)x, (int)y - 25, IMGUI_ALIGN_CENTER, text, imguiRGBA(0, 0, 0, 220));
-			snprintf(text, 128, "Compressed: %.1f kB", tile->dataSize / 1024.0f);
-			imguiDrawText((int)x, (int)y - 45, IMGUI_ALIGN_CENTER, text, imguiRGBA(0, 0, 0, 128));
-			snprintf(text, 128, "Raw:%.1fkB", rawSize / 1024.0f);
-			imguiDrawText((int)x, (int)y - 65, IMGUI_ALIGN_CENTER, text, imguiRGBA(0, 0, 0, 128));
-		}
-	}
-}
 
 dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq)
 {
@@ -632,35 +471,10 @@ dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const floa
 	return tc->getObstacleRef(obmin);
 }
 
-void drawObstacles(duDebugDraw* dd, const dtTileCache* tc)
-{
-	// Draw obstacles
-	for (int i = 0; i < tc->getObstacleCount(); ++i)
-	{
-		const dtTileCacheObstacle* ob = tc->getObstacle(i);
-		if (ob->state == DT_OBSTACLE_EMPTY) continue;
-		float bmin[3], bmax[3];
-		tc->getObstacleBounds(ob, bmin, bmax);
-
-		unsigned int col = 0;
-		if (ob->state == DT_OBSTACLE_PROCESSING)
-			col = duRGBA(255, 255, 0, 128);
-		else if (ob->state == DT_OBSTACLE_PROCESSED)
-			col = duRGBA(255, 192, 0, 192);
-		else if (ob->state == DT_OBSTACLE_REMOVING)
-			col = duRGBA(220, 0, 0, 128);
-
-		duDebugDrawCylinder(dd, bmin[0], bmin[1], bmin[2], bmax[0], bmax[1], bmax[2], col);
-		duDebugDrawCylinderWire(dd, bmin[0], bmin[1], bmin[2], bmax[0], bmax[1], bmax[2], duDarkenCol(col), 2);
-	}
-}
-
-
-
 
 class TempObstacleHilightTool : public SampleTool
 {
-	Sample_TempObstacles* m_sample;
+	MyTempObstacles* m_sample;
 	float m_hitPos[3];
 	bool m_hitPosSet;
 	int m_drawType;
@@ -669,8 +483,7 @@ public:
 
 	TempObstacleHilightTool() :
 		m_sample(0),
-		m_hitPosSet(false),
-		m_drawType(DRAWDETAIL_AREAS)
+		m_hitPosSet(false)
 	{
 		m_hitPos[0] = m_hitPos[1] = m_hitPos[2] = 0;
 	}
@@ -683,25 +496,11 @@ public:
 
 	virtual void init(Sample* sample)
 	{
-		m_sample = (Sample_TempObstacles*)sample;
+		m_sample = (MyTempObstacles*)sample;
 	}
 
 	virtual void reset() {}
 
-	virtual void handleMenu()
-	{
-		imguiLabel("Highlight Tile Cache");
-		imguiValue("Click LMB to highlight a tile.");
-		imguiSeparator();
-		if (imguiCheck("Draw Areas", m_drawType == DRAWDETAIL_AREAS))
-			m_drawType = DRAWDETAIL_AREAS;
-		if (imguiCheck("Draw Regions", m_drawType == DRAWDETAIL_REGIONS))
-			m_drawType = DRAWDETAIL_REGIONS;
-		if (imguiCheck("Draw Contours", m_drawType == DRAWDETAIL_CONTOURS))
-			m_drawType = DRAWDETAIL_CONTOURS;
-		if (imguiCheck("Draw Mesh", m_drawType == DRAWDETAIL_MESH))
-			m_drawType = DRAWDETAIL_MESH;
-	}
 
 	virtual void handleClick(const float* /*s*/, const float* p, bool /*shift*/)
 	{
@@ -715,47 +514,12 @@ public:
 
 	virtual void handleUpdate(const float /*dt*/) {}
 
-	virtual void handleRender()
-	{
-		if (m_hitPosSet && m_sample)
-		{
-			const float s = m_sample->getAgentRadius();
-			glColor4ub(0, 0, 0, 128);
-			glLineWidth(2.0f);
-			glBegin(GL_LINES);
-			glVertex3f(m_hitPos[0] - s, m_hitPos[1] + 0.1f, m_hitPos[2]);
-			glVertex3f(m_hitPos[0] + s, m_hitPos[1] + 0.1f, m_hitPos[2]);
-			glVertex3f(m_hitPos[0], m_hitPos[1] - s + 0.1f, m_hitPos[2]);
-			glVertex3f(m_hitPos[0], m_hitPos[1] + s + 0.1f, m_hitPos[2]);
-			glVertex3f(m_hitPos[0], m_hitPos[1] + 0.1f, m_hitPos[2] - s);
-			glVertex3f(m_hitPos[0], m_hitPos[1] + 0.1f, m_hitPos[2] + s);
-			glEnd();
-			glLineWidth(1.0f);
-
-			int tx = 0, ty = 0;
-			m_sample->getTilePos(m_hitPos, tx, ty);
-			m_sample->renderCachedTile(tx, ty, m_drawType);
-		}
-	}
-
-	virtual void handleRenderOverlay(double* proj, double* model, int* view)
-	{
-		if (m_hitPosSet)
-		{
-			if (m_sample)
-			{
-				int tx = 0, ty = 0;
-				m_sample->getTilePos(m_hitPos, tx, ty);
-				m_sample->renderCachedTileOverlay(tx, ty, proj, model, view);
-			}
-		}
-	}
 };
 
 
 class TempObstacleCreateTool : public SampleTool
 {
-	Sample_TempObstacles* m_sample;
+	MyTempObstacles* m_sample;
 
 public:
 
@@ -771,23 +535,10 @@ public:
 
 	virtual void init(Sample* sample)
 	{
-		m_sample = (Sample_TempObstacles*)sample;
+		m_sample = (MyTempObstacles*)sample;
 	}
 
 	virtual void reset() {}
-
-	virtual void handleMenu()
-	{
-		imguiLabel("Create Temp Obstacles");
-
-		if (imguiButton("Remove All"))
-			m_sample->clearAllTempObstacles();
-
-		imguiSeparator();
-
-		imguiValue("Click LMB to create an obstacle.");
-		imguiValue("Shift+LMB to remove an obstacle.");
-	}
 
 	virtual void handleClick(const float* s, const float* p, bool shift)
 	{
@@ -811,7 +562,7 @@ public:
 
 
 
-Sample_TempObstacles::Sample_TempObstacles() :
+MyTempObstacles::MyTempObstacles() :
 	m_keepInterResults(false),
 	m_tileCache(0),
 	m_cacheBuildTimeMs(0),
@@ -819,7 +570,6 @@ Sample_TempObstacles::Sample_TempObstacles() :
 	m_cacheRawSize(0),
 	m_cacheLayerCount(0),
 	m_cacheBuildMemUsage(0),
-	m_drawMode(DRAWMODE_NAVMESH),
 	m_maxTiles(0),
 	m_maxPolysPerTile(0),
 	m_tileSize(48)
@@ -830,10 +580,9 @@ Sample_TempObstacles::Sample_TempObstacles() :
 	m_tcomp = new FastLZCompressor;
 	m_tmproc = new MeshProcess;
 
-	setTool(new TempObstacleCreateTool);
 }
 
-Sample_TempObstacles::~Sample_TempObstacles()
+MyTempObstacles::~MyTempObstacles()
 {
 	dtFreeNavMesh(m_navMesh);
 	m_navMesh = 0;
@@ -841,7 +590,7 @@ Sample_TempObstacles::~Sample_TempObstacles()
 }
 
 
-void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
+void MyTempObstacles::handleMeshChanged(class InputGeom* geom)
 {
 	Sample::handleMeshChanged(geom);
 
@@ -861,7 +610,7 @@ void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
 	initToolStates(this);
 }
 
-void Sample_TempObstacles::addTempObstacle(const float* pos)
+void MyTempObstacles::addTempObstacle(const float* pos)
 {
 	if (!m_tileCache)
 		return;
@@ -871,7 +620,7 @@ void Sample_TempObstacles::addTempObstacle(const float* pos)
 	m_tileCache->addObstacle(p, 1.0f, 2.0f, 0);
 }
 
-void Sample_TempObstacles::removeTempObstacle(const float* sp, const float* sq)
+void MyTempObstacles::removeTempObstacle(const float* sp, const float* sq)
 {
 	if (!m_tileCache)
 		return;
@@ -879,7 +628,7 @@ void Sample_TempObstacles::removeTempObstacle(const float* sp, const float* sq)
 	m_tileCache->removeObstacle(ref);
 }
 
-void Sample_TempObstacles::clearAllTempObstacles()
+void MyTempObstacles::clearAllTempObstacles()
 {
 	if (!m_tileCache)
 		return;
@@ -891,7 +640,7 @@ void Sample_TempObstacles::clearAllTempObstacles()
 	}
 }
 
-bool Sample_TempObstacles::handleBuild()
+bool MyTempObstacles::handleBuild()
 {
 	dtStatus status;
 
@@ -1060,7 +809,7 @@ bool Sample_TempObstacles::handleBuild()
 	return true;
 }
 
-void Sample_TempObstacles::handleUpdate(const float dt)
+void MyTempObstacles::handleUpdate(const float dt)
 {
 	Sample::handleUpdate(dt);
 
@@ -1072,7 +821,7 @@ void Sample_TempObstacles::handleUpdate(const float dt)
 	m_tileCache->update(dt, m_navMesh);
 }
 
-void Sample_TempObstacles::getTilePos(const float* pos, int& tx, int& ty)
+void MyTempObstacles::getTilePos(const float* pos, int& tx, int& ty)
 {
 	if (!m_geom) return;
 
@@ -1101,7 +850,7 @@ struct TileCacheTileHeader
 	int dataSize;
 };
 
-void Sample_TempObstacles::saveAll(const char* path)
+void MyTempObstacles::saveAll(const char* path)
 {
 	if (!m_tileCache) return;
 
@@ -1141,7 +890,7 @@ void Sample_TempObstacles::saveAll(const char* path)
 	fclose(fp);
 }
 
-void Sample_TempObstacles::loadAll(const char* path)
+void MyTempObstacles::loadAll(const char* path)
 {
 	FILE* fp = fopen(path, "rb");
 	if (!fp) return;

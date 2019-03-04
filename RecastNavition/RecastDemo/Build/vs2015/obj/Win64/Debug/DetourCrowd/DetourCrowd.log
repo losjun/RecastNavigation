@@ -1,1 +1,8 @@
-﻿  DetourCrowd.vcxproj -> C:\recastnavigation-master\RecastDemo\Build\vs2015\lib\Debug\DetourCrowd.lib
+﻿  DetourCrowd.cpp
+  DetourLocalBoundary.cpp
+  DetourObstacleAvoidance.cpp
+  DetourPathCorridor.cpp
+  DetourPathQueue.cpp
+  DetourProximityGrid.cpp
+  正在生成代码...
+  DetourCrowd.vcxproj -> C:\Users\zhangjun1\Desktop\recastnavigation-master\RecastNavigation\RecastNavition\RecastDemo\Build\vs2015\lib\Debug\DetourCrowd.lib
