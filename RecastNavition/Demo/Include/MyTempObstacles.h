@@ -49,11 +49,13 @@ protected:
 public:
 	MyTempObstacles();
 	virtual ~MyTempObstacles();
+
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
 	virtual void handleUpdate(const float dt);
 
 	void getTilePos(const float* pos, int& tx, int& ty);
+
 	void addTempObstacle(const float* pos);
 	void removeTempObstacle(const float* sp, const float* sq);
 	void clearAllTempObstacles();

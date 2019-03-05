@@ -165,24 +165,6 @@ void Sample::resetToolStates()
 	}
 }
 
-void Sample::renderToolStates()
-{
-	for (int i = 0; i < MAX_TOOLS; i++)
-	{
-		if (m_toolStates[i])
-			m_toolStates[i]->handleRender();
-	}
-}
-
-void Sample::renderOverlayToolStates(double* proj, double* model, int* view)
-{
-	for (int i = 0; i < MAX_TOOLS; i++)
-	{
-		if (m_toolStates[i])
-			m_toolStates[i]->handleRenderOverlay(proj, model, view);
-	}
-}
-
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
 static const int NAVMESHSET_VERSION = 1;
 

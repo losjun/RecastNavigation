@@ -27,6 +27,7 @@
 #include "Sample.h"
 #include "MyTempObstacles.h"
 #include "Recast.h"
+#include "DetourNavMeshQuery.h"
 #include "DetourAssert.h"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshBuilder.h"
@@ -471,92 +472,6 @@ dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const floa
 	return tc->getObstacleRef(obmin);
 }
 
-
-class TempObstacleHilightTool : public SampleTool
-{
-	MyTempObstacles* m_sample;
-	float m_hitPos[3];
-	bool m_hitPosSet;
-	int m_drawType;
-
-public:
-
-	TempObstacleHilightTool() :
-		m_sample(0),
-		m_hitPosSet(false)
-	{
-		m_hitPos[0] = m_hitPos[1] = m_hitPos[2] = 0;
-	}
-
-	virtual ~TempObstacleHilightTool()
-	{
-	}
-
-	virtual int type() { return TOOL_TILE_HIGHLIGHT; }
-
-	virtual void init(Sample* sample)
-	{
-		m_sample = (MyTempObstacles*)sample;
-	}
-
-	virtual void reset() {}
-
-
-	virtual void handleClick(const float* /*s*/, const float* p, bool /*shift*/)
-	{
-		m_hitPosSet = true;
-		rcVcopy(m_hitPos, p);
-	}
-
-	virtual void handleToggle() {}
-
-	virtual void handleStep() {}
-
-	virtual void handleUpdate(const float /*dt*/) {}
-
-};
-
-
-class TempObstacleCreateTool : public SampleTool
-{
-	MyTempObstacles* m_sample;
-
-public:
-
-	TempObstacleCreateTool() : m_sample(0)
-	{
-	}
-
-	virtual ~TempObstacleCreateTool()
-	{
-	}
-
-	virtual int type() { return TOOL_TEMP_OBSTACLE; }
-
-	virtual void init(Sample* sample)
-	{
-		m_sample = (MyTempObstacles*)sample;
-	}
-
-	virtual void reset() {}
-
-	virtual void handleClick(const float* s, const float* p, bool shift)
-	{
-		if (m_sample)
-		{
-			if (shift)
-				m_sample->removeTempObstacle(s, p);
-			else
-				m_sample->addTempObstacle(p);
-		}
-	}
-
-	virtual void handleToggle() {}
-	virtual void handleStep() {}
-	virtual void handleUpdate(const float /*dt*/) {}
-	virtual void handleRender() {}
-	virtual void handleRenderOverlay(double* /*proj*/, double* /*model*/, int* /*view*/) { }
-};
 
 
 

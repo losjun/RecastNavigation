@@ -138,14 +138,6 @@ public:
 	SampleToolState* getToolState(int type) { return m_toolStates[type]; }
 	void setToolState(int type, SampleToolState* s) { m_toolStates[type] = s; }
 
-	virtual void handleSettings();
-	virtual void handleTools();
-	virtual void handleDebugMode();
-	virtual void handleClick(const float* s, const float* p, bool shift);
-	virtual void handleToggle();
-	virtual void handleStep();
-	virtual void handleRender();
-	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
 	virtual void handleUpdate(const float dt);
@@ -159,14 +151,9 @@ public:
 	virtual float getAgentHeight() { return m_agentHeight; }
 	virtual float getAgentClimb() { return m_agentMaxClimb; }
 	
-	unsigned char getNavMeshDrawFlags() const { return m_navMeshDrawFlags; }
-	void setNavMeshDrawFlags(unsigned char flags) { m_navMeshDrawFlags = flags; }
-
 	void updateToolStates(const float dt);
 	void initToolStates(Sample* sample);
 	void resetToolStates();
-	void renderToolStates();
-	void renderOverlayToolStates(double* proj, double* model, int* view);
 
 	void resetCommonSettings();
 	void handleCommonSettings();

@@ -83,10 +83,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\Detour\Include;..\..\Contrib\fastlz;..\..\..\DetourCrowd\Include;..\..\..\DetourTileCache\Include;..\..\Include;..\..\..\Recast\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Detour\Include;..\..\Contrib\fastlz;..\..\..\DetourCrowd\Include;..\..\..\DetourTileCache\Include;..\..\..\Demo\Include;..\..\..\Recast\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,19 +120,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Demo\Include\ChunkyTriMesh.h" />
+    <ClInclude Include="..\..\..\Demo\Include\InputGeom.h" />
+    <ClInclude Include="..\..\..\Demo\Include\InterfaceTypes.h" />
+    <ClInclude Include="..\..\..\Demo\Include\MeshLoaderObj.h" />
     <ClInclude Include="..\..\..\Demo\Include\MyTempObstacles.h" />
+    <ClInclude Include="..\..\..\Demo\Include\NavInstance.h" />
+    <ClInclude Include="..\..\..\Demo\Include\NavMeshInterface.h" />
     <ClInclude Include="..\..\..\Demo\Include\PerfTimer.h" />
     <ClInclude Include="..\..\..\Demo\Include\Sample.h" />
     <ClInclude Include="..\..\..\Demo\Include\SampleInterfaces.h" />
     <ClInclude Include="..\..\Contrib\fastlz\fastlz.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Demo\Source\ChunkyTriMesh.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\InputGeom.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\main.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\MeshLoaderObj.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\MyTempObstacles.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\NavInstance.cpp" />
+    <ClCompile Include="..\..\..\Demo\Source\NavMeshInterface.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\Sample.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\PerfTimer.cpp" />
     <ClCompile Include="..\..\..\Demo\Source\SampleInterfaces.cpp" />
     <ClCompile Include="..\..\Contrib\fastlz\fastlz.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Detour.vcxproj">
+      <Project>{18fee2ad-04a0-0d84-ed5a-21d8d99b94d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="DetourCrowd.vcxproj">
+      <Project>{f7616a66-6317-e35b-ec0b-dd3258c0d95f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="DetourTileCache.vcxproj">
+      <Project>{1ab411d3-863f-7f97-8f50-028cfb5adb97}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Recast.vcxproj">
+      <Project>{a7a881ce-934a-aca4-7c05-c0f8684633f5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

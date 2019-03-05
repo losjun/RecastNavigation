@@ -22,6 +22,15 @@
     <Filter Include="Contrib\SampleInterfaces">
       <UniqueIdentifier>{d3d2b753-9f89-450a-9701-980457e0eb72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Contrib\MeshLoaderObj">
+      <UniqueIdentifier>{2907cb01-39fd-44b9-9458-b45446af31a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contrib\ChunkTriMesh">
+      <UniqueIdentifier>{1c4241c5-d80a-464c-9123-b41683050409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contrib\InputGeom">
+      <UniqueIdentifier>{3e0e3134-45d8-4948-96fd-96709c085cc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Contrib\fastlz\fastlz.h">
@@ -38,6 +47,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Demo\Include\SampleInterfaces.h">
       <Filter>Contrib\SampleInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\MeshLoaderObj.h">
+      <Filter>Contrib\MeshLoaderObj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\ChunkyTriMesh.h">
+      <Filter>Contrib\ChunkTriMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\InterfaceTypes.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\NavInstance.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\NavMeshInterface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Demo\Include\InputGeom.h">
+      <Filter>Contrib\InputGeom</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +85,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Demo\Source\SampleInterfaces.cpp">
       <Filter>Contrib\SampleInterfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\MeshLoaderObj.cpp">
+      <Filter>Contrib\MeshLoaderObj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\ChunkyTriMesh.cpp">
+      <Filter>Contrib\ChunkTriMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\NavInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\NavMeshInterface.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Demo\Source\InputGeom.cpp">
+      <Filter>Contrib\InputGeom</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 #include "SampleInterfaces.h"
 #include "Recast.h"
 #include "PerfTimer.h"
-
+#include <string.h>
 #ifdef WIN32
 #	define snprintf _snprintf
 #endif
@@ -130,5 +130,12 @@ const char* BuildContext::getLogText(const int i) const
 {
 	return m_messages[i]+1;
 }
+
+BuildContext*  BuildContext::GetShareCTX()
+{
+	return &m_ctx;
+}
+
+BuildContext BuildContext::m_ctx;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -37,6 +37,7 @@ class BuildContext : public rcContext
 	char m_textPool[TEXT_POOL_SIZE];
 	int m_textPoolSize;
 	
+	static BuildContext m_ctx;
 public:
 	BuildContext();
 	
@@ -46,6 +47,8 @@ public:
 	int getLogCount() const;
 	/// Returns log message text.
 	const char* getLogText(const int i) const;
+
+	static BuildContext* GetShareCTX();
 	
 protected:	
 	/// Virtual functions for custom implementations.

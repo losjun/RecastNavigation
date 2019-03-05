@@ -38,7 +38,7 @@ class BuildContext : public rcContext
 	static const int TEXT_POOL_SIZE = 8000;
 	char m_textPool[TEXT_POOL_SIZE];
 	int m_textPoolSize;
-	
+
 public:
 	BuildContext();
 	
