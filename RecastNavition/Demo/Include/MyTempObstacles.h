@@ -64,7 +64,7 @@ public:
 	void clearAllTempObstacles();
 
 	void saveAll(const char* path);
-	void loadAll(const char* path);
+	bool loadAll(const char* path);
 
 private:
 	// Explicitly disabled copy constructor and copy assignment operator.

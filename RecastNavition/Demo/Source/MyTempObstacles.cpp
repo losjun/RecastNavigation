@@ -869,10 +869,11 @@ void MyTempObstacles::saveAll(const char* path)
 	fclose(fp);
 }
 
-void MyTempObstacles::loadAll(const char* path)
+//TODO ERROR LOG
+bool MyTempObstacles::loadAll(const char* path)
 {
 	FILE* fp = fopen(path, "rb");
-	if (!fp) return;
+	if (!fp) return false;
 
 	// Read header.
 	TileCacheSetHeader header;
@@ -881,43 +882,43 @@ void MyTempObstacles::loadAll(const char* path)
 	{
 		// Error or early EOF
 		fclose(fp);
-		return;
+		return false;
 	}
 	if (header.magic != TILECACHESET_MAGIC)
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 	if (header.version != TILECACHESET_VERSION)
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 
 	m_navMesh = dtAllocNavMesh();
 	if (!m_navMesh)
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 	dtStatus status = m_navMesh->init(&header.meshParams);
 	if (dtStatusFailed(status))
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 
 	m_tileCache = dtAllocTileCache();
 	if (!m_tileCache)
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 	status = m_tileCache->init(&header.cacheParams, m_talloc, m_tcomp, m_tmproc);
 	if (dtStatusFailed(status))
 	{
 		fclose(fp);
-		return;
+		return false;
 	}
 
 	// Read tiles.
@@ -929,7 +930,7 @@ void MyTempObstacles::loadAll(const char* path)
 		{
 			// Error or early EOF
 			fclose(fp);
-			return;
+			return false;
 		}
 		if (!tileHeader.tileRef || !tileHeader.dataSize)
 			break;
@@ -943,7 +944,7 @@ void MyTempObstacles::loadAll(const char* path)
 			// Error or early EOF
 			dtFree(data);
 			fclose(fp);
-			return;
+			return false;
 		}
 
 		dtCompressedTileRef tile = 0;
@@ -955,7 +956,16 @@ void MyTempObstacles::loadAll(const char* path)
 
 		if (tile)
 			m_tileCache->buildNavMeshTile(tile, m_navMesh);
+
+		status = m_navQuery->init(m_navMesh, 2048);
+		if (dtStatusFailed(status))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init Detour navmesh query");
+			return false;
+		}
 	}
 
 	fclose(fp);
+
+	return true;
 }
