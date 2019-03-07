@@ -42,6 +42,7 @@ protected:
 	int m_cacheLayerCount;
 	unsigned int m_cacheBuildMemUsage;
 	
+	int m_gridSize;
 	enum DrawMode
 	{
 		DRAWMODE_NAVMESH,

@@ -289,8 +289,20 @@ bool InputGeom::loadGeomSet(rcContext* ctx, const std::string& filepath)
 							&m_buildSettings.tileSize);
 		}
 	}
-	
-	delete [] buf;
+	delete[] buf;
+	// Load .obj file
+	size_t extensionPos = filepath.find_last_of('.');
+	auto withoutExtension = filepath.substr(0, extensionPos) + ".obj";
+
+	// File name.
+	const char* name = withoutExtension.c_str();
+	if (*name)
+	{
+		if (!loadMesh(ctx, name))
+		{
+			return false;
+		}
+	}
 	
 	return true;
 }

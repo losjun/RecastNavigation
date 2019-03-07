@@ -1,2 +1,10 @@
-﻿  NavInstance.cpp
+﻿  MyTempObstacles.cpp
+c:\users\zhangjun1\desktop\recastnavigation-master\recastnavigation\recastnavition\demo\source\mytempobstacles.cpp(536): warning C4996: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(1961): note: 参见“_snprintf”的声明
+c:\users\zhangjun1\desktop\recastnavigation-master\recastnavigation\recastnavition\demo\source\mytempobstacles.cpp(836): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
+c:\users\zhangjun1\desktop\recastnavigation-master\recastnavigation\recastnavition\demo\source\mytempobstacles.cpp(874): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
+  NavInstance.cpp
+  正在生成代码...
   Demo.vcxproj -> C:\Users\zhangjun1\Desktop\recastnavigation-master\RecastNavigation\RecastNavition\RecastDemo\Build\vs2015\x64\Debug\Demo.exe

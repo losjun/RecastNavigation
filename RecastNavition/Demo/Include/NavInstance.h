@@ -37,11 +37,16 @@ private:
 	BuildContext* ctx;
 	dtQueryFilter m_filter; // Only affect navMesh query method
 
+	std::string m_gsetName;
 public:
 	NavInstance();
 	~NavInstance();
 
-	bool BuildNavMesh(const std::string inPath, const std::string outPath);
+	bool BuildNavMesh(const std::string inPath);
+	bool SaveNavMesh(const std::string outPath);
+
+
+	bool BuildNavMeshAndSave(const std::string inPath, const std::string outPath);
 	void Clear();
 
 private:

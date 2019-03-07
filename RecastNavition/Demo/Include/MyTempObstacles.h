@@ -44,12 +44,15 @@ protected:
 
 	int m_maxTiles;
 	int m_maxPolysPerTile;
+
+	int m_gridSize;
 	float m_tileSize;
+	
 
 public:
 	MyTempObstacles();
 	virtual ~MyTempObstacles();
-
+	virtual void handleSettings();
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
 	virtual void handleUpdate(const float dt);
